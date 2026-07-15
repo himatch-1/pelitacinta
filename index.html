@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Senarai Semak Persediaan Nikah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Cormorant+Garamond:wght@500;600;700&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF6EC;
+    --cream-deep:#F3ECDC;
+    --emerald:#1F4A3D;
+    --emerald-deep:#153229;
+    --gold:#B8912F;
+    --gold-soft:#E6D6A8;
+    --rose:#C08076;
+    --ink:#2A2A24;
+    --ink-soft:#6b675c;
+    --line: rgba(31,74,61,0.16);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Karla', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .bg-motif{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(circle at 8% 12%, rgba(184,145,47,0.07) 0, transparent 40%),
+      radial-gradient(circle at 92% 88%, rgba(31,74,61,0.06) 0, transparent 40%);
+  }
+  header{
+    position:relative; z-index:1;
+    text-align:center;
+    padding:44px 20px 28px;
+    background:linear-gradient(180deg, var(--emerald-deep), var(--emerald) 70%);
+    color:var(--cream);
+    border-bottom:3px solid var(--gold);
+  }
+  .bismillah{
+    font-family:'Amiri', serif;
+    font-size:clamp(26px,5vw,38px);
+    color:var(--gold-soft);
+    margin:0 0 6px;
+    direction:rtl;
+  }
+  .ayat{
+    font-family:'Amiri', serif;
+    font-style:italic;
+    font-size:15px;
+    color:#d9d2b8;
+    margin:0 0 20px;
+    letter-spacing:0.02em;
+  }
+  h1.title{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700;
+    font-size:clamp(28px,5vw,42px);
+    margin:0 0 6px;
+    letter-spacing:0.01em;
+  }
+  .subtitle{
+    font-size:13px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold-soft);
+    margin:0;
+  }
+  .divider-flor{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    margin:18px auto 0; max-width:220px; color:var(--gold-soft);
+  }
+  .divider-flor::before, .divider-flor::after{
+    content:""; height:1px; flex:1; background:var(--gold-soft); opacity:0.5;
+  }
+
+  .progress-wrap{
+    position:sticky; top:0; z-index:5;
+    background:var(--cream);
+    border-bottom:1px solid var(--line);
+    padding:14px 20px;
+  }
+  .progress-inner{
+    max-width:760px; margin:0 auto;
+    display:flex; align-items:center; gap:14px;
+  }
+  .progress-track{
+    flex:1; height:10px; border-radius:20px;
+    background:var(--cream-deep);
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--gold), var(--emerald));
+    width:0%;
+    transition:width .4s ease;
+    border-radius:20px;
+  }
+  .progress-label{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:700;
+    font-size:18px;
+    color:var(--emerald);
+    white-space:nowrap;
+  }
+
+  main{
+    position:relative; z-index:1;
+    max-width:760px; margin:0 auto; padding:24px 18px 80px;
+  }
+
+  nav.tabs{
+    display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:22px;
+    scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex:none;
+    font-family:'Karla',sans-serif; font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:999px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .2s ease;
+  }
+  .tab-btn:hover{ border-color:var(--gold); color:var(--emerald); }
+  .tab-btn.active{
+    background:var(--emerald); color:var(--cream); border-color:var(--emerald);
+  }
+
+  .section{ display:none; }
+  .section.active{ display:block; animation:fadeIn .35s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .section-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:4px;
+    border-bottom:2px solid var(--gold-soft);
+    padding-bottom:10px;
+  }
+  .section-head h2{
+    font-family:'Cormorant Garamond', serif;
+    font-size:24px; font-weight:700; color:var(--emerald-deep);
+    margin:0;
+  }
+  .section-count{
+    font-size:13px; color:var(--ink-soft); font-weight:600;
+  }
+  .section-note{
+    font-size:13px; color:var(--ink-soft); margin:10px 0 18px;
+    font-style:italic;
+  }
+
+  ul.checklist{ list-style:none; margin:0; padding:0; }
+  .item{
+    display:flex; align-items:flex-start; gap:12px;
+    padding:12px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .item:last-child{ border-bottom:none; }
+
+  .flower-check{
+    flex:none; position:relative; width:26px; height:26px; margin-top:1px; cursor:pointer;
+  }
+  .flower-check input{
+    position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer;
+  }
+  .flower-check .box{
+    position:absolute; inset:0;
+    border:2px solid var(--emerald); border-radius:50%;
+    background:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; color:transparent;
+    transition:all .25s ease;
+  }
+  .flower-check input:checked + .box{
+    background:var(--emerald); border-color:var(--emerald); color:var(--gold-soft);
+    transform:scale(1.05);
+  }
+  .flower-check input:checked + .box::after{
+    content:"❀";
+  }
+  .flower-check input:focus-visible + .box{
+    outline:2px solid var(--gold); outline-offset:2px;
+  }
+
+  .item-text{
+    flex:1; font-size:15px; line-height:1.4; padding-top:2px;
+  }
+  .item.done .item-text{
+    color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--gold);
+  }
+  .item-note{
+    margin-top:6px;
+    width:100%;
+    border:none; border-bottom:1px dashed var(--line);
+    background:transparent;
+    font-family:'Karla',sans-serif; font-size:13px; color:var(--ink);
+    padding:4px 2px;
+  }
+  .item-note::placeholder{ color:#b7b2a1; }
+  .item-note:focus{ outline:none; border-bottom-color:var(--gold); }
+
+  .del-btn{
+    flex:none;
+    background:none; border:none; cursor:pointer;
+    color:#c7c2b0; font-size:13px; line-height:1;
+    padding:4px 2px;
+    transition:color .2s ease;
+  }
+  .del-btn:hover{ color:var(--rose); }
+
+  .add-row{
+    display:flex; gap:8px; margin-top:16px;
+    padding-top:14px; border-top:1px dashed var(--line);
+  }
+  .add-input{
+    flex:1;
+    font-family:'Karla',sans-serif; font-size:14px;
+    padding:9px 12px;
+    border:1px solid var(--line); border-radius:8px;
+    background:#fff; color:var(--ink);
+  }
+  .add-input::placeholder{ color:#b7b2a1; }
+  .add-input:focus{ outline:none; border-color:var(--gold); }
+  .add-btn{
+    flex:none;
+    font-family:'Karla',sans-serif; font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:8px;
+    background:var(--emerald); color:var(--cream);
+    border:none; cursor:pointer;
+    transition:background .2s ease;
+  }
+  .add-btn:hover{ background:var(--emerald-deep); }
+
+  .footer-note{
+    text-align:center; font-size:12px; color:var(--ink-soft);
+    margin-top:34px; line-height:1.6;
+  }
+  .reset-btn{
+    display:block; margin:18px auto 0;
+    font-family:'Karla',sans-serif; font-weight:600; font-size:12px;
+    color:var(--rose); background:none; border:1px solid var(--rose);
+    border-radius:999px; padding:7px 16px; cursor:pointer;
+  }
+  .reset-btn:hover{ background:var(--rose); color:#fff; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-motif"></div>
+
+<header>
+  <p class="bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
+  <p class="ayat">"Inna fatahna laka fathan mubina"</p>
+  <h1 class="title">Senarai Semak Persediaan Nikah</h1>
+  <p class="subtitle">List Preparation Sebelum Nikah</p>
+  <div class="divider-flor">❀</div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <span class="progress-label" id="progressLabel">0%</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-label" id="progressCount">0/0</span>
+  </div>
+</div>
+
+<main>
+  <nav class="tabs" id="tabs"></nav>
+  <div id="sections"></div>
+
+  <p class="footer-note">
+    Tip: tekan bulatan untuk tandakan siap. Bahagian pakaian ada ruang nota — boleh isi warna/saiz.<br>
+    Nota: senarai ini reset bila page di-refresh sebab tiada storan luaran digunakan di sini.
+  </p>
+  <button class="reset-btn" id="resetBtn">Reset semua semakan</button>
+</main>
+
+<script>
+const DATA = [
+  {
+    id:"dokumen",
+    title:"Dokumen Sebelum Nikah",
+    note:"L = Lelaki, P = Perempuan",
+    items:[
+      "Kursus kahwin (L & P)",
+      "HIV test (L & P)",
+      "Borang nikah SSPIM",
+      "2 salinan IC lelaki",
+      "2 salinan IC perempuan",
+      "2 salinan IC wali (perempuan sahaja)",
+      "Sijil kursus nikah asal (L & P)",
+      "2 salinan sijil kursus nikah (L & P)",
+      "Borang ujian saringan HIV (L & P)",
+      "2 salinan borang ujian saringan HIV (L & P)",
+      "2 salinan IC 2 orang saksi (nikah dalam Kelantan)",
+      "2 keping gambar passport lelaki (bersongkok)",
+      "2 keping gambar passport perempuan"
+    ]
+  },
+  {
+    id:"tokkadi",
+    title:"Tokkadi & Saksi",
+    items:[
+      "Saksi (2 orang)",
+      "Wali"
+    ]
+  },
+  {
+    id:"borangL",
+    title:"Semakan Borang Lelaki",
+    items:[
+      "Borang kebenaran nikah",
+      "Salinan IC lelaki/perempuan",
+      "Result HIV",
+      "Sijil kursus kahwin (asal/salinan)",
+      "Cop borang permohonan Imam Kariah",
+      "Gambar passport"
+    ]
+  },
+  {
+    id:"borangP",
+    title:"Semakan Borang Perempuan",
+    items:[
+      "Daftar SSPIM",
+      "Print semua borang (2 salinan)",
+      "Salinan IC lelaki/perempuan",
+      "Result HIV",
+      "Sijil kursus kahwin (asal/salinan)",
+      "Sijil nikah ibu bapa (asal/salinan)",
+      "Salinan IC wali",
+      "Cop borang permohonan Imam Kariah",
+      "Gambar passport (2 keping)"
+    ]
+  },
+  {
+    id:"bawaL",
+    title:"Barang Pengantin Lelaki Perlu Bawa",
+    note:"Hari akad nikah",
+    items:[
+      "IC pengantin (kedua-dua)",
+      "Duit maskahwin (dalam sampul)",
+      "Gelang batal air sembahyang",
+      "Duit upah tokkadi & saksi",
+      "Borang II berkaitan (jika ada)",
+      "Pen"
+    ]
+  },
+  {
+    id:"outfitL",
+    title:"Pakaian Pengantin Lelaki",
+    withNote:true,
+    items:[
+      "Baju Melayu",
+      "Sampin",
+      "Butang baju",
+      "Songkok",
+      "Kasut",
+      "Stokin",
+      "Singlet nude/off-white"
+    ]
+  },
+  {
+    id:"outfitP",
+    title:"Pakaian Pengantin Perempuan",
+    withNote:true,
+    items:[
+      "Baju kurung",
+      "Tudung",
+      "Inner neck",
+      "Getah rambut selesa",
+      "Veil/selempang",
+      "Flat shoes",
+      "Stokin kulit",
+      "Bunga tangan",
+      "Kain dalam",
+      "Singlet/inner",
+      "Mini fan"
+    ]
+  },
+  {
+    id:"totebag",
+    title:"Dalam Totebag 🛍️",
+    items:[
+      "Mini fan",
+      "Air",
+      "Tisu",
+      "Hand mirror",
+      "Lipstik",
+      "Compact powder"
+    ]
+  },
+  {
+    id:"other",
+    title:"Lain-lain 🎀",
+    items:[
+      "Mirror",
+      "Sheet mask",
+      "Lens",
+      "Perfume mulut",
+      "Cover baju",
+      "Hanger",
+      "Payung",
+      "Inai",
+      "Mandi bunga",
+      "Powerbank"
+    ]
+  }
+];
+
+// mutable working copy: each section gets a list of live item objects
+// { label, note, checked, custom } — "custom" items (added by user) can be deleted
+let idCounter = 0;
+const sections = DATA.map(sec=>({
+  id: sec.id,
+  title: sec.title,
+  note: sec.note,
+  withNote: sec.withNote,
+  items: sec.items.map(label=>({ uid: 'i'+(idCounter++), label, note:"", checked:false, custom:false }))
+}));
+
+let activeSection = sections[0].id;
+
+function totalCounts(){
+  let total=0, done=0;
+  sections.forEach(sec=> sec.items.forEach(it=>{ total++; if(it.checked) done++; }));
+  return {total, done};
+}
+
+function sectionCounts(sec){
+  let total=sec.items.length, done=0;
+  sec.items.forEach(it=>{ if(it.checked) done++; });
+  return {total, done};
+}
+
+function renderTabs(){
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = "";
+  DATA.forEach(sec=>{
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (sec.id===activeSection ? ' active' : '');
+    btn.textContent = sec.title;
+    btn.onclick = ()=>{ activeSection = sec.id; renderTabs(); renderSections(); };
+    tabsEl.appendChild(btn);
+  });
+}
+
+function renderSections(){
+  const wrap = document.getElementById('sections');
+  wrap.innerHTML = "";
+  sections.forEach(sec=>{
+    const div = document.createElement('div');
+    div.className = 'section' + (sec.id===activeSection ? ' active' : '');
+
+    const {total, done} = sectionCounts(sec);
+    const head = document.createElement('div');
+    head.className = 'section-head';
+    head.innerHTML = `<h2>${sec.title}</h2><span class="section-count">${done}/${total} selesai</span>`;
+    div.appendChild(head);
+
+    if(sec.note){
+      const noteP = document.createElement('p');
+      noteP.className = 'section-note';
+      noteP.textContent = sec.note;
+      div.appendChild(noteP);
+    }
+
+    const ul = document.createElement('ul');
+    ul.className = 'checklist';
+    sec.items.forEach(it=>{
+      const li = document.createElement('li');
+      li.className = 'item' + (it.checked ? ' done' : '');
+
+      const checkWrap = document.createElement('label');
+      checkWrap.className = 'flower-check';
+      checkWrap.innerHTML = `<input type="checkbox" ${it.checked ? 'checked' : ''}><span class="box"></span>`;
+      checkWrap.querySelector('input').addEventListener('change', (e)=>{
+        it.checked = e.target.checked;
+        renderTabs();
+        renderSections();
+        updateProgress();
+      });
+
+      const textWrap = document.createElement('div');
+      textWrap.className = 'item-text';
+      textWrap.style.display='flex';
+      textWrap.style.flexDirection='column';
+
+      const rowTop = document.createElement('div');
+      rowTop.style.display='flex';
+      rowTop.style.alignItems='center';
+      rowTop.style.justifyContent='space-between';
+      rowTop.style.gap='8px';
+
+      const span = document.createElement('span');
+      span.textContent = it.label;
+      rowTop.appendChild(span);
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'del-btn';
+      delBtn.title = 'Buang item';
+      delBtn.textContent = '✕';
+      delBtn.addEventListener('click', ()=>{
+        sec.items = sec.items.filter(x=>x.uid!==it.uid);
+        renderTabs(); renderSections(); updateProgress();
+      });
+      rowTop.appendChild(delBtn);
+
+      textWrap.appendChild(rowTop);
+
+      if(sec.withNote){
+        const input = document.createElement('input');
+        input.className = 'item-note';
+        input.placeholder = 'nota — warna, saiz, kedai...';
+        input.value = it.note;
+        input.addEventListener('input', (e)=>{ it.note = e.target.value; });
+        textWrap.appendChild(input);
+      }
+
+      li.appendChild(checkWrap);
+      li.appendChild(textWrap);
+      ul.appendChild(li);
+    });
+
+    div.appendChild(ul);
+
+    // add-item row
+    const addRow = document.createElement('div');
+    addRow.className = 'add-row';
+    addRow.innerHTML = `
+      <input type="text" class="add-input" placeholder="Tambah item baru...">
+      <button class="add-btn">+ Tambah</button>
+    `;
+    const addInput = addRow.querySelector('.add-input');
+    const addBtn = addRow.querySelector('.add-btn');
+    const commitAdd = ()=>{
+      const val = addInput.value.trim();
+      if(!val) return;
+      sec.items.push({ uid:'i'+(idCounter++), label:val, note:"", checked:false, custom:true });
+      addInput.value = "";
+      renderTabs(); renderSections(); updateProgress();
+      // refocus the input in the freshly rendered section
+      const newDiv = document.getElementById('sections').querySelector(`.section.active .add-input`);
+      if(newDiv) newDiv.focus();
+    };
+    addBtn.addEventListener('click', commitAdd);
+    addInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') commitAdd(); });
+    div.appendChild(addRow);
+
+    wrap.appendChild(div);
+  });
+}
+
+function updateProgress(){
+  const {total, done} = totalCounts();
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = pct + '%';
+  document.getElementById('progressCount').textContent = done + '/' + total;
+}
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(!confirm('Reset semua semakan? Nota juga akan dikosongkan.')) return;
+  Object.keys(state).forEach(k=>{ state[k].checked=false; state[k].note=""; });
+  renderTabs(); renderSections(); updateProgress();
+});
+
+renderTabs();
+renderSections();
+updateProgress();
+</script>
+
+</body>
+</html>
